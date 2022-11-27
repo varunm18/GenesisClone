@@ -6,99 +6,55 @@ import urllib.parse
 from flask import redirect, render_template, request, session
 from functools import wraps
 
-s = requests.session()
+from playwright.sync_api import sync_playwright
+from bs4 import BeautifulSoup
 
-# def main():
-#     login()
-#     getGrades()
+def loginStudent(user_id, password):
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36")
 
-def login():
-    url = 'https://students.sbschools.org/genesis/sis/j_security_check'
 
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Cache-Control': 'max-age=0',
-        'Connection': 'keep-alive',
-        'Content-Length': '77',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Cookie': 'lastvisit=AAA4B527D8D84C459131A1A8F5C96B4D; JSESSIONID=F9DA04938B6524682D9FF818185C3D70',
-        'Host': 'students.sbschools.org',
-        'Origin': 'https://students.sbschools.org',
-        'Referer': 'https://students.sbschools.org/genesis/sis/view?gohome=true',
-        'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36'
-    }
+        page.goto('https://students.sbschools.org/genesis/sis/view?gohome=true')
+        page.fill('input#j_username', user_id+'@sbstudents.org')
+        page.fill('input#j_password', password)
+        page.click('input[type=submit]')
 
-    payload = {
-        'idTokenString' : '',
-        'j_username' : '',
-        'j_password' : ''
-    }
-    global user_id 
-    user_id = payload['j_username'][0:8]
+        page.wait_for_selector('select#fldStudent')
+        html = page.content()
+        soup = BeautifulSoup(html, 'html.parser')
 
-    response = s.post(url, data=payload, headers=headers)
-    print(response.url)
+        name = soup.find('option').text
+        name = name[name.find(",")+2:]+" "+name[:name.find(",")] 
 
-    # with open('index.html', 'w') as f:
-    #     f.write(response.text)
+        if not name or name=="":
+            return False  
 
-    soup = BeautifulSoup(response.text, 'html.parser')
+        print(name+"("+user_id+") is signed in")  
+        return True    
 
-    name = soup.find('option').text
+def getGrades(user_id, password, marking_period):
+    with sync_playwright() as p:
+        browser = p.chromium.launch()
+        page = browser.new_page(user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36")
 
-    name = name[name.find(",")+2:]+" "+name[:name.find(",")]
-    print(name+"("+user_id+") is signed in")  
+        page.goto('https://students.sbschools.org/genesis/sis/view?gohome=true')
+        page.fill('input#j_username', user_id+'@sbstudents.org')
+        page.fill('input#j_password', password)
+        page.click('input[type=submit]')
 
-def getGrades():
-    headers = {
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        'Accept-Language': 'en-US,en;q=0.9',
-        'Connection': 'keep-alive',
-        # Requests sorts cookies= alphabetically
-        # 'Cookie': 'JSESSIONID=A10B692AA9FD1CB91F5D8C5D554928C7; _ga=GA1.2.1700244599.1667853233; _gid=GA1.2.641054521.1667853233',
-        'Referer': 'https://students.sbschools.org/genesis/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&action=form&studentid='+user_id,
-        'Sec-Fetch-Dest': 'document',
-        'Sec-Fetch-Mode': 'navigate',
-        'Sec-Fetch-Site': 'same-origin',
-        'Sec-Fetch-User': '?1',
-        'Upgrade-Insecure-Requests': '1',
-        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/107.0.0.0 Safari/537.36',
-        'sec-ch-ua': '"Google Chrome";v="107", "Chromium";v="107", "Not=A?Brand";v="24"',
-        'sec-ch-ua-mobile': '?0',
-        'sec-ch-ua-platform': '"macOS"',
-    }
+        page.goto('https://students.sbschools.org/genesis/parents?tab1=studentdata&tab2=gradebook&tab3=weeklysummary&studentid='+user_id+'&action=form&mpToView='+marking_period)
 
-    params = {
-        'tab1': 'studentdata',
-        'tab2': 'gradebook',
-        'action': 'form',
-        'studentid': user_id,
-    }
-    print(user_id)
+        html = page.content()
+        soup = BeautifulSoup(html, 'html.parser')
 
-    response = s.get('https://students.sbschools.org/genesis/parents', params=params, headers=headers)
+        for row in soup.find_all(class_={"listrowodd", "listroweven"}):
+            for grade in row.find_all(class_='cellRight', title="View Course Summary"):
+                num = grade.find('div')
+                print(num.text.strip(), end=" ")
 
-    soup = BeautifulSoup(response.text, 'html.parser') 
-
-    
-
-    for row in soup.find_all(class_={"listrowodd", "listroweven"}):
-        for grade in row.find_all(class_='cellRight', title="View Course Summary"):
-            num = grade.find('div')
-            print(num.text.strip(), end=" ")
-
-        className = row.find('u')   
-        print(className.text.strip())
+            className = row.find('u')   
+            print(className.text.strip()) 
 
 def login_required(f):
     """
@@ -113,5 +69,3 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# if __name__ == "__main__":
-#     main()

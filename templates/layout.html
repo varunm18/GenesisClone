@@ -24,17 +24,17 @@
 
         <nav class="bg-light border navbar navbar-expand-md navbar-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/"><span class="green">Genesis</span></a>
+                <a class="navbar-brand" href="/"><span class="green">Genesis</span><span class="blue"> Clone</span></a>
                 <button aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-bs-target="#navbar" data-bs-toggle="collapse" type="button">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbar">
                     {% if session["user_id"] %}
                         <ul class="navbar-nav me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/quote">Overview</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/buy">Grades</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/sell">Schedule</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/history">Settings</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/">Overview</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/grades">Grades</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/schedule">Schedule</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
                         </ul>
                         <ul class="navbar-nav ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
@@ -59,6 +59,10 @@
         <main class="container-fluid py-5 text-center">
             {% block main %}{% endblock %}
         </main>
+
+        <footer class="mb-5 small text-center text-muted">
+            By: Varun Mannam
+        </footer>
 
     </body>
 
