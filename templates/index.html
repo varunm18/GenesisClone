@@ -1,1 +1,35 @@
-hi
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    <div>
+        <h2>{{ data[0]["Name"] }}({{ data[0]["ID"] }}) is signed in</h2>
+    </div>
+        
+
+    <!-- <div class="mb-3">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Class</th>
+                    <th scope="col">Current Price per Share</th>
+                    <th scope="col">Shares</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in stocks %}
+                <tr>
+                    <td>{{ s.name }} ({{ s.symbol }})</td>
+                    <td>${{ s.price }}</td>
+                    <td>{{ s.shares }}</td>
+                    <td>${{ "%0.2f" | format(s.price*s.shares | float) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div> -->
+{% endblock %}

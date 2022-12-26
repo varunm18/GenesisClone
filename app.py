@@ -3,7 +3,9 @@ import os
 from flask import Flask, flash, redirect, render_template, request, session
 from flask_session import Session
 from tempfile import mkdtemp
-from helpers import login_required, loginStudent, getGrades
+from helpers import login_required, checkLogin, getData
+
+import json
 
 app = Flask(__name__)
 
@@ -12,6 +14,8 @@ app.config["TEMPLATES_AUTO_RELOAD"] = True
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
+
+data = []
 
 @app.after_request
 def after_request(response):
@@ -24,7 +28,11 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
-    return render_template("index.html")
+
+    if not data:
+        populate()   
+    
+    return render_template("index.html", data=data)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -46,7 +54,10 @@ def login():
             flash("must provide password")
             return render_template("login.html")
 
-        if not loginStudent(request.form.get("username"), request.form.get("password")):
+        name = checkLogin(request.form.get("username"), request.form.get("password"))
+        id = request.form.get("username")
+
+        if name=='':
             flash("invalid student id (don't use @sbschools.org) and/or password")    
             return render_template("login.html")
 
@@ -55,7 +66,9 @@ def login():
         #     return apology("invalid username and/or password", 403)
 
         # # Remember which user has logged in
-        session["user_id"] = request.form.get("username")
+        session["user_id"] = request.form.get("username")+" "+request.form.get("password")
+
+        data.append(json.loads(getData(request.form.get("username"), request.form.get("password"))))
 
         # # Redirect user to home page
         return redirect("/")
@@ -70,6 +83,7 @@ def logout():
 
     # Forget any user_id
     session.clear()
+    data.clear()
 
     # Redirect user to login form
     return redirect("/")
@@ -87,6 +101,14 @@ def schedule():
 @app.route("/settings", methods=["GET", "POST"])
 @login_required
 def settings():
-    return render_template("grades.html")        
+    return render_template("grades.html")    
 
+def populate():
+    data.clear()
+
+    user = session["user_id"]
+    name = user[0:user.find(" ")]
+    password = user[user.find(" ")+1:]
+
+    data.append(json.loads(getData(name, password))) 
 
