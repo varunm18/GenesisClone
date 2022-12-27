@@ -6,6 +6,7 @@ from functools import wraps
 from playwright.sync_api import sync_playwright
 from bs4 import BeautifulSoup
 import json
+import re
 
 def checkLogin(user_id, password):
     with sync_playwright() as p:
@@ -36,7 +37,7 @@ def getData(user_id, password):
     total = {}
     found = False
     with sync_playwright() as p:
-        browser = p.chromium.launch()
+        browser = p.chromium.launch(headless=True)
         page = browser.new_page(user_agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.51 Safari/537.36")
 
         page.goto('https://students.sbschools.org/genesis/sis/view?gohome=true')
@@ -217,6 +218,72 @@ def getData(user_id, password):
                 mp4[className.text.strip()] = 'Class Not Taken'
             found = False
 
+        # Get All Assignments
+        page.goto('https://students.sbschools.org/genesis/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid='+user_id+'&action=form&date=&dateRange=allMP&courseAndSection=&status=')
+        page.wait_for_timeout(4000)
+
+        html = page.content()
+        soup = BeautifulSoup(html, 'html.parser')
+
+        assign = []
+        assign_temp = []
+
+        count = 0
+        for row in soup.find_all(class_={"listrowodd", "listroweven"}):
+            for cell in row.find_all(class_={"cellLeft"}):
+                count+=1
+                if(count<6 and count!=4):
+                    item = re.sub('\n\n', '', cell.text.strip())
+                    item = re.sub('  ', '', item)
+                    item = re.sub('Close', '', item)
+                    index = item.find('\n')
+                    if(count==2):
+                        assign_temp.append(item[0:index])
+                        assign_temp.append(item[index+1:])
+                    elif(count==3):    
+                        index = item.find('\n', item.find('\n')+1)
+                        assign_temp.append(item[1:index])
+                        assign_temp.append(item[index+1:])
+                    elif(count==5):
+                        item = re.sub("\n\n\n\n\n\n\n", '', item)
+                        item = re.sub("\n\n", ' ', item)
+                        if(item.find("Not Graded") != -1):
+                            assign_temp.append("Not Graded"+item[item.find("Pts")-1:])  
+                        else:
+                            assign_temp.append(item[0:item.find("\n")])
+                            assign_temp.append(item[item.find("\n")+1:])
+                    else:
+                        assign_temp.append(item)
+            count = 0           
+            assign.append(assign_temp.copy())
+            assign_temp.clear()   
+
+        assign1 = {}
+        assign2 = {}
+        assign3 = {}
+        assign4 = {}
+        assignments = {}
+        count1 = 0
+        count2 = 0
+        count3 = 0
+        count4 = 0
+        for i in reversed(range(len(assign))):
+            if(assign[i][0]=='MP1'):
+                assign1[count1] = assign[i]
+                count1+=1
+            elif(assign[i][0]=='MP2'):
+                assign2[count2] = assign[i]
+                count2+=1
+            elif(assign[i][0]=='MP3'):
+                assign3[count3] = assign[i]
+                count3+=1
+            else:  
+                assign4[count4] = assign[i]
+                count4+=1 
+        assignments["MP1"] = assign1
+        assignments["MP2"] = assign2
+        assignments["MP3"] = assign3
+        assignments["MP4"] = assign4          
 
     grades_total["MP1"] = mp1
     grades_total["MP2"] = mp2
@@ -231,6 +298,7 @@ def getData(user_id, password):
     total["Bus Schedule"] = bus
     total["Schedule"] = schedule
     total["Grades"] = grades_total
+    total["Assignments"] = assignments
 
     json_object = json.dumps(total, indent=4)
     # with open("json", "w") as outfile:

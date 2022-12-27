@@ -100,7 +100,7 @@ def grades():
 def schedule():
     if not data:
         populate() 
-    return render_template("assignments.html", data=data)    
+    return render_template("assignments.html", mp1=data[0]["Assignments"]["MP1"], mp2=data[0]["Assignments"]["MP2"], mp3=data[0]["Assignments"]["MP3"], mp4=data[0]["Assignments"]["MP4"])    
 
 @app.route("/extra", methods=["GET", "POST"])
 @login_required

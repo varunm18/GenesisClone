@@ -5,5 +5,112 @@
 {% endblock %}
 
 {% block main %}
+    <h2>Choose a Marking Period</h2>
+    <select class="form-select" id="select">
+        <option disabled>Choose a MP</option>
+        <option id="1">MP1</option>
+        <option id="2">MP2</option>
+        <option id="3">MP3</option>
+        <option id="4">MP4</option>
+    </select>
 
+    <button type="button" class="btn btn-primary" id="btn">Select</button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Class</th>
+                <th scope="col">Assignment</th>
+                <th scope="col">Grade</th>
+                <th scope="col">Percent</th>
+                <th scope="col">Catagory</th>
+            </tr>
+        </thead>    
+        <tbody id="mp1">
+            {% for i in mp1 %}
+            <tr>
+                <td>{{ mp1[i][1] }}({{ mp1[i][2] }})</td>
+                <td>{{ mp1[i][3] }}</td>
+                <td>{{ mp1[i][5] }}</td>
+                <td>{{ mp1[i][6] }}</td>
+                <td>{{ mp1[i][4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tbody id="mp2" hidden>
+            {% for i in mp2 %}
+            <tr>
+                <td>{{ mp2[i][1] }}({{ mp2[i][2] }})</td>
+                <td>{{ mp2[i][3] }}</td>
+                <td>{{ mp2[i][5] }}</td>
+                <td>{{ mp2[i][6] }}</td>
+                <td>{{ mp2[i][4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tbody id="mp3" hidden>
+            {% for i in mp3 %}
+            <tr>
+                <td>{{ mp3[i][1] }}({{ mp3[i][2] }})</td>
+                <td>{{ mp3[i][3] }}</td>
+                <td>{{ mp3[i][5] }}</td>
+                <td>{{ mp3[i][6] }}</td>
+                <td>{{ mp3[i][4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tbody id="mp4" hidden>
+            {% for i in mp4 %}
+            <tr>
+                <td>{{ mp4[i][1] }}({{ mp4[i][2] }})</td>
+                <td>{{ mp4[i][3] }}</td>
+                <td>{{ mp4[i][5] }}</td>
+                <td>{{ mp4[i][6] }}</td>
+                <td>{{ mp4[i][4] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        var btn = document.getElementById("btn");
+        var select = document.getElementById("select");
+        var mp1 = document.getElementById("mp1");
+        var mp2 = document.getElementById("mp2");
+        var mp3 = document.getElementById("mp3");
+        var mp4 = document.getElementById("mp4");
+        mp = 0;
+        
+        btn.onclick = (event) => {
+             event.preventDefault();
+             // show the selected index
+             mp = select.selectedIndex;
+             switch(mp)
+             {
+                 case 1:
+                     reset();
+                     mp1.removeAttribute("hidden");
+                     break;
+                 case 2:
+                     reset();
+                     mp2.removeAttribute("hidden");
+                     break;  
+                 case 3:
+                     reset();
+                     mp3.removeAttribute("hidden");
+                     break;
+                 case 4:
+                     reset();
+                     mp4.removeAttribute("hidden");
+                     break;  
+             }
+         }; 
+ 
+        function reset(){
+             mp1.setAttribute("hidden", "hidden");
+             mp2.setAttribute("hidden", "hidden");
+             mp3.setAttribute("hidden", "hidden");
+             mp4.setAttribute("hidden", "hidden");
+         }   
+     </script>
 {% endblock %}
