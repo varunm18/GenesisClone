@@ -63,6 +63,42 @@ def getData(user_id, password):
         name = name[name.find(",")+2:]+" "+name[:name.find(",")]
 
         print(name+"("+user_id+") is signed in")
+        
+        # Get State ID
+
+        extra = []
+        for table in soup.find_all('td', attrs={'style':'font-size:.8em; white-space: nowrap; text-transform: uppercase'}):
+            for td in table.find_all('span'):
+                extra.append(td.text.strip())
+        state_id = extra[1]
+
+        # Get Counselor
+
+        for table in soup.find_all('td', class_='cellLeft', attrs={'style':'border: none;'}):
+            for span in table.find_all('span', attrs={'style':'font-weight: 600;'}):
+                counselor = span.text.strip()
+        counselor = counselor[counselor.find(",")+2:]+" "+counselor[:counselor.find(",")]
+
+        # Get Lunch Balance
+
+        for table in soup.find_all('td', class_='cellLeft', attrs={'style':'border: none;padding: 1pt 5pt;font-weight: 600; '}):
+            lunch_balance = table.text.strip()
+
+        # Get Bus Schedule
+
+        bus = {}
+        bus_sched = []
+        bus_count = 0
+        for table in soup.find_all('table', class_='list', attrs={'style':'border: solid 1pt #EEEEEE;'}):
+            for row in table.find_all('tr', class_='listroweven'):  
+                for td in row.find_all('td', class_='cellCenter'):
+                    bus_count+=1
+                    if(bus_count>1 and bus_count<5):
+                        bus_sched.append(td.text.strip())
+
+        bus['Route'] = bus_sched[0]
+        bus['Time'] = bus_sched[1]
+        bus['Location'] = bus_sched[2]
 
         # Get Schedule
 
@@ -181,11 +217,6 @@ def getData(user_id, password):
                 mp4[className.text.strip()] = 'Class Not Taken'
             found = False
 
-        # Get all assignments and organize by MP
-        page.goto('https://students.sbschools.org/genesis/parents?tab1=studentdata&tab2=gradebook&tab3=listassignments&studentid='+user_id+'&action=form&date=&dateRange=allMP&courseAndSection=&status=')
-        
-        html = page.content()
-        soup = BeautifulSoup(html, 'html.parser')
 
     grades_total["MP1"] = mp1
     grades_total["MP2"] = mp2
@@ -194,6 +225,10 @@ def getData(user_id, password):
 
     total["Name"] = name
     total["ID"] = user_id
+    total["State ID"] = state_id
+    total["Counselor"] = counselor
+    total["Lunch Balance"] = lunch_balance
+    total["Bus Schedule"] = bus
     total["Schedule"] = schedule
     total["Grades"] = grades_total
 

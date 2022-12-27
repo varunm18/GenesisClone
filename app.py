@@ -102,10 +102,12 @@ def schedule():
         populate() 
     return render_template("assignments.html", data=data)    
 
-@app.route("/settings", methods=["GET", "POST"])
+@app.route("/extra", methods=["GET", "POST"])
 @login_required
 def settings():
-    return render_template("grades.html")    
+    if not data:
+        populate() 
+    return render_template("extra.html", data=data[0])    
 
 def populate():
     data.clear()
