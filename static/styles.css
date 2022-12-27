@@ -26,3 +26,9 @@ th, td {
     padding-left: 30px;
     padding-right: 40px;
 }
+
+select.form-select {
+    width: 100px;
+    margin: auto;
+    margin-bottom: 10px;
+}

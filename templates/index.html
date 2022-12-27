@@ -8,28 +8,78 @@
     <div>
         <h2>{{ data[0]["Name"] }}({{ data[0]["ID"] }}) is signed in</h2>
     </div>
-        
+    <h3>Schedule</h3>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="option1" checked>
+        <label class="form-check-label" for="inlineRadio1">A Day</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+        <label class="form-check-label" for="inlineRadio2">B Day</label>
+    </div>
 
-    <!-- <div class="mb-3">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">Class</th>
-                    <th scope="col">Current Price per Share</th>
-                    <th scope="col">Shares</th>
-                    <th scope="col">Total</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for s in stocks %}
-                <tr>
-                    <td>{{ s.name }} ({{ s.symbol }})</td>
-                    <td>${{ s.price }}</td>
-                    <td>{{ s.shares }}</td>
-                    <td>${{ "%0.2f" | format(s.price*s.shares | float) }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div> -->
+    <button type="button" class="btn btn-primary" id="btn">Select</button>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Period</th>
+                <th scope="col">Class</th>
+                <th scope="col">Teacher</th>
+                <th scope="col">Room</th>
+                <th scope="col">Time</th>
+                <th scope="col">Quarters</th>
+            </tr>
+        </thead> 
+        <tbody id="a">
+            {% for i in a_day %}
+            <tr>
+                <td>{{ a_day[i][1] }}</td>
+                <td>{{ a_day[i][2] }}</td>
+                <td>{{ a_day[i][6] }}</td>
+                <td>{{ a_day[i][5] }}</td>
+                <td>{{ a_day[i][0] }}</td>
+                <td>{{ a_day[i][3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>  
+        <tbody id="b" hidden>
+            {% for i in b_day %}
+            <tr>
+                <td>{{ b_day[i][1] }}</td>
+                <td>{{ b_day[i][2] }}</td>
+                <td>{{ b_day[i][6] }}</td>
+                <td>{{ b_day[i][5] }}</td>
+                <td>{{ b_day[i][0] }}</td>
+                <td>{{ b_day[i][3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>  
+    </table>
+
+    <script>
+        var opt1 = document.getElementById("inlineRadio1");
+        var opt2 = document.getElementById("inlineRadio2");
+        var a = document.getElementById("a");
+        var b = document.getElementById("b");
+        var btn = document.getElementById("btn")
+
+        btn.onclick = (event) => {
+            event.preventDefault();
+            reset()
+            if(opt1.checked)
+            {
+                a.removeAttribute("hidden");
+            }
+            else
+            {
+                b.removeAttribute("hidden");
+            }
+         }; 
+ 
+        function reset(){
+             a.setAttribute("hidden", "hidden");
+             b.setAttribute("hidden", "hidden");
+         }   
+     </script>
 {% endblock %}

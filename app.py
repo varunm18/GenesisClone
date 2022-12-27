@@ -32,7 +32,7 @@ def index():
     if not data:
         populate()   
     
-    return render_template("index.html", data=data)
+    return render_template("index.html", data=data, a_day=data[0]["Schedule"]["A Day"], b_day=data[0]["Schedule"]["B Day"])
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -91,12 +91,16 @@ def logout():
 @app.route("/grades", methods=["GET", "POST"])
 @login_required
 def grades():
-    return render_template("grades.html")
+    if not data:
+        populate() 
+    return render_template("grades.html",  mp1=data[0]["Grades"]["MP1"], mp2=data[0]["Grades"]["MP2"], mp3=data[0]["Grades"]["MP3"], mp4=data[0]["Grades"]["MP4"])
 
-@app.route("/schedule", methods=["GET", "POST"])
+@app.route("/assignments", methods=["GET", "POST"])
 @login_required
 def schedule():
-    return render_template("grades.html")    
+    if not data:
+        populate() 
+    return render_template("assignments.html", data=data)    
 
 @app.route("/settings", methods=["GET", "POST"])
 @login_required
