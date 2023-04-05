@@ -1,4 +1,7 @@
 # GenesisClone
+
+Final Project for Harvard's CS50 Course
+
 #### Description:
 
 A clone of my school's website, Genesis(https://students.sbschools.org/genesis/sis/view?gohome=true) that holds every student's grades as well as other data. This website webscrapes the data from the website and presents in a cleaner more digestable form for a student's convenience. Below is a more detailed explanation of the backend.
