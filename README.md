@@ -1,6 +1,6 @@
 # GenesisClone
 
-Final Project for Harvard's CS50 Course
+Final Project for Harvard's CS50x Course
 
 #### Description:
 
