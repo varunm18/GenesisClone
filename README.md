@@ -14,6 +14,7 @@ A clone of my school's website, Genesis(https://students.sbschools.org/genesis/s
     * route "/logout": clears session and data array. Redirects user to "/"
     * route "/", "/grades", "/assignments", "/extra": Login is required for these routes. If data array is empty, it will first be populated. Respective html pages will be rendered and given the data array.
     * populate(): method that makes sure that the data array is always full. Used when flask-session remembers the user and data is required.
+
 * helpers.py: holds functions for the main backend of the website
     * checkLogin(user_id, password): takes in a student's user id as well as their password. It will then use the python library playwright in order to create a virtual browser(chromium) that goes to the login page of Genesis. It will then input the given data(parameters of the function) to the proper html tags and then press the submit button. It will then attempt to find your name on the page you were redirected to. Finds name with python library BeautifulSoup(used as an html parser). If it isn't able to find it then the method will return an empty string. If it is able to find it then the student's name will be returned.
     * getData(user_id, password): takes in a student's user_id and password. Follows the same process of signing in as checkLogin() and retrieves name, state id, counselor,lunch balance and bus schedule. Saves this information into a dictionary. BeautifulSoup then parses html for student's schedule which is also saved to a dictionary by a or b day. Playwright is then directed to go to grade page and then soup is used to save grades by marking period into dictionary. Same process is used to scrape all assignments. All data is stored into a dictionary which is then used to form a json. This json object is returned.
@@ -27,8 +28,6 @@ A clone of my school's website, Genesis(https://students.sbschools.org/genesis/s
     * assignments.html: Same as grades.html but used to list all the assignments of the student.
     * extra.html: Displays the student's state id, counselor, lunch balance and bus route in a bootstrap accordian.
 
-    - /static:
-
-        ~ favicon.ico: holds favicon.ico(Genesis logo from Genesis page).
-
-        ~ styles.css: sets different attributes for certan html tags.
+* /static:
+   * favicon.ico: holds favicon.ico(Genesis logo from Genesis page).
+   * styles.css: sets different attributes for certan html tags.
